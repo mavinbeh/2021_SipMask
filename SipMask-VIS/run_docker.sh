@@ -10,5 +10,7 @@ docker run --gpus all --shm-size=8g -it \
 -v $(pwd)/results:/mmdetection/SipMask-VIS/results \
 -v $(pwd)/pycocotools:/mmdetection/SipMask-VIS/pycocotools \
 -v $(pwd)/tools:/mmdetection/SipMask-VIS/tools \
+-v $(pwd)/mmdet:/mmdetection/SipMask-VIS/mmdet \
 mmdetection:sipmask-vis \
 scripts/test_video.sh
+#ls -la

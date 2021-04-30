@@ -1,0 +1,3 @@
+[submodule "SipMask-VIS/pycocotools/cocoapi"]
+	path = SipMask-VIS/pycocotools/cocoapi
+	url = git@github.com:youtubevos/cocoapi.git

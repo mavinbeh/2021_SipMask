@@ -1,4 +1,5 @@
 import logging
+import cv2
 from abc import ABCMeta, abstractmethod
 
 import mmcv
@@ -165,6 +166,15 @@ class BaseDetector(nn.Module):
                     else:
                         color_id = obj_ids[i]
                     img_show[mask] = self.color_mask[color_id, :]*0.6+ img_show[mask] * 0.4
+
+                    bbox_int = bboxes[i].astype(np.int32)
+                    print("img_show ", type(img_show))
+                    print("obj_ids[0] ", str(obj_ids[0]))
+                    print()
+                    label = str(obj_ids[i])
+                    cv2.putText(img_show, label, (bbox_int[0], bbox_int[1] - 20),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.7, (255,255,255))
+
             if save_vis:
                 show = False
                 save_path = '{}/{}/{}.png'.format(save_path, img_meta['video_id'], img_meta['frame_id'])

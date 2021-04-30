@@ -11,3 +11,7 @@ RUN conda install cython -y
 COPY . /mmdetection
 WORKDIR /mmdetection/SipMask-VIS
 RUN pip install -e .
+RUN echo "x"
+RUN pip uninstall -y pycocotools
+RUN pip install  git+https://github.com/youtubevos/cocoapi.git#"egg=pycocotools&subdirectory=PythonAPI"
+RUN pip install  --upgrade mmcv==0.2.12
