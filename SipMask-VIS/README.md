@@ -14,7 +14,7 @@ are in the github release
 download it and run 
 ```
 cd SipMask-VIS/data/YouTubeVIS/valid
-unzip JPEGImages.zip -d JPEGImages
+unzip JPEGImages.zip 
 ```
 
 # TODO
