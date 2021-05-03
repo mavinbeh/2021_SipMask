@@ -8,10 +8,22 @@ RUN apt-get update && apt-get install -y libglib2.0-0 libsm6 libxrender-dev libx
 
 # Install mmdetection
 RUN conda install cython -y
-COPY . /mmdetection
-WORKDIR /mmdetection/SipMask-VIS
+
+
+
+COPY setup.py README.md  /SipMask-VIS/
+COPY mmdet/ /SipMask-VIS/mmdet/
+WORKDIR /SipMask-VIS
+
 RUN pip install -e .
-RUN echo "x"
 RUN pip uninstall -y pycocotools
+
 RUN pip install  git+https://github.com/youtubevos/cocoapi.git#"egg=pycocotools&subdirectory=PythonAPI"
 RUN pip install  --upgrade mmcv==0.2.12
+# remove old opencv without ffmpeg
+RUN pip uninstall -y opencv-python
+# install opencv version with ffmpeg supportconda 
+RUN conda install -c conda-forge opencv -y 
+
+
+
