@@ -24,6 +24,7 @@ RUN pip install  --upgrade mmcv==0.2.12
 RUN pip uninstall -y opencv-python
 # install opencv version with ffmpeg supportconda 
 RUN conda install -c conda-forge opencv -y 
-
+RUN pip  install debugpy
+EXPOSE 5678
 
 
