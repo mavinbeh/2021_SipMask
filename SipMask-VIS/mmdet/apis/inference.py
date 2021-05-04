@@ -82,7 +82,8 @@ def _prepare_data(img, img_transform, cfg, device):
             img_shape=img_shape,
             pad_shape=pad_shape,
             scale_factor=scale_factor,
-            flip=False)
+            flip=False,
+            is_first=True)
     ]
     return dict(img=[img], img_meta=[img_meta])
 
