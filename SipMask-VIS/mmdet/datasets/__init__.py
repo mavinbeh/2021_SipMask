@@ -2,6 +2,7 @@ from .builder import build_dataset
 from .cityscapes import CityscapesDataset
 from .coco import CocoDataset
 from .ytvos import YTVOSDataset
+from .ytvos_mavinbe_clone import YTVOSMavinbeCloneDataset
 from .custom import CustomDataset
 from .dataset_wrappers import ConcatDataset, RepeatDataset
 from .extra_aug import ExtraAugmentation
@@ -17,5 +18,5 @@ __all__ = [
     'CityscapesDataset', 'GroupSampler', 'DistributedGroupSampler',
     'build_dataloader', 'to_tensor', 'random_scale', 'show_ann',
     'ConcatDataset', 'RepeatDataset', 'ExtraAugmentation', 'WIDERFaceDataset',
-    'DATASETS', 'build_dataset', 'YTVOSDataset'
+    'DATASETS', 'build_dataset', 'YTVOSDataset' 'YTVOSMavinbeCloneDataset'
 ]

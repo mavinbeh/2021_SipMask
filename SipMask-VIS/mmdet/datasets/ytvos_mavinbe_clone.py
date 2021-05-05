@@ -12,7 +12,7 @@ from mmcv.parallel import DataContainer as DC
 from .utils import to_tensor, random_scale
 
 @DATASETS.register_module
-class YTVOSDataset(CustomDataset):
+class YTVOSMavinbeCloneDataset(CustomDataset):
     CLASSES=('person','giant_panda','lizard','parrot','skateboard','sedan',
         'ape','dog','snake','monkey','hand','rabbit','duck','cat','cow','fish',
         'train','horse','turtle','bear','motorbike','giraffe','leopard',
@@ -37,6 +37,8 @@ class YTVOSDataset(CustomDataset):
                  aug_ref_bbox_param=None,
                  resize_keep_ratio=True,
                  test_mode=False):
+        self.frame_id_counter = 0
+
         # prefix of images path
         self.img_prefix = img_prefix
 
@@ -292,10 +294,13 @@ class YTVOSDataset(CustomDataset):
         return data
     def prepare_test_img(self, idx):
         """Prepare an image for testing (multi-scale and flipping)"""
+        frame_id = self.frame_id_counter
+        vid = 0
         vid, frame_id = idx
         vid_info = self.vid_infos[vid]
         img = mmcv.imread(osp.join(self.img_prefix, vid_info['filenames'][frame_id]))
         proposal = None
+        
 
         def prepare_single(img, frame_id, scale, flip, proposal=None):
             _img, img_shape, pad_shape, scale_factor = self.img_transform(
@@ -341,59 +346,7 @@ class YTVOSDataset(CustomDataset):
                 img_metas.append(DC(_img_meta, cpu_only=True))
                 proposals.append(_proposal)
         data = dict(img=imgs, img_meta=img_metas)
-        return data
-
-    def prepare_test_img_by_given_image(self, img, vid, frame_id ):
-        """Prepare an image for testing (multi-scale and flipping)"""
-        vid, frame_id = idx
-        vid_info = self.vid_infos[vid]
-        img = mmcv.imread(osp.join(self.img_prefix, vid_info['filenames'][frame_id]))
-        proposal = None
-
-        def prepare_single(img, frame_id, scale, flip, proposal=None):
-            _img, img_shape, pad_shape, scale_factor = self.img_transform(
-                img, scale, flip, keep_ratio=self.resize_keep_ratio)
-            _img = to_tensor(_img)
-            _img_meta = dict(
-                ori_shape=(vid_info['height'], vid_info['width'], 3),
-                img_shape=img_shape,
-                pad_shape=pad_shape,
-                is_first=(frame_id == 0),
-                video_id=vid,
-                frame_id =frame_id,
-                scale_factor=scale_factor,
-                flip=flip)
-            if proposal is not None:
-                if proposal.shape[1] == 5:
-                    score = proposal[:, 4, None]
-                    proposal = proposal[:, :4]
-                else:
-                    score = None
-                _proposal = self.bbox_transform(proposal, img_shape,
-                                                scale_factor, flip)
-                _proposal = np.hstack(
-                    [_proposal, score]) if score is not None else _proposal
-                _proposal = to_tensor(_proposal)
-            else:
-                _proposal = None
-            return _img, _img_meta, _proposal
-
-        imgs = []
-        img_metas = []
-        proposals = []
-        for scale in self.img_scales:
-            _img, _img_meta, _proposal = prepare_single(
-                img, frame_id, scale, False, proposal)
-            imgs.append(_img)
-            img_metas.append(DC(_img_meta, cpu_only=True))
-            proposals.append(_proposal)
-            if self.flip_ratio > 0:
-                _img, _img_meta, _proposal = prepare_single(
-                    img, scale, True, proposal)
-                imgs.append(_img)
-                img_metas.append(DC(_img_meta, cpu_only=True))
-                proposals.append(_proposal)
-        data = dict(img=imgs, img_meta=img_metas)
+        self.frame_id_counter += 1
         return data
 
     def _parse_ann_info(self, ann_info, frame_id, with_mask=True):
