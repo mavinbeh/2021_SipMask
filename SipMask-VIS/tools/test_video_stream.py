@@ -17,7 +17,6 @@ def single_test(model, data_loader, show=False, save_path=''):
     model.eval()
     results = []
     dataset = data_loader.dataset
-    prog_bar = mmcv.ProgressBar(len(dataset))
     for i, data in enumerate(data_loader):
         with torch.no_grad():
             result = model(return_loss=False, rescale=not show, **data)
@@ -29,10 +28,6 @@ def single_test(model, data_loader, show=False, save_path=''):
                                      save_vis = True,
                                      save_path = save_path,
                                      is_video = True)
-
-        batch_size = data['img'][0].size(0)
-        for _ in range(batch_size):
-            prog_bar.update()
     return results
 
 
@@ -94,7 +89,7 @@ def main():
     data_loader = build_dataloader(
         dataset,
         imgs_per_gpu=1,
-        workers_per_gpu=cfg.data.workers_per_gpu,
+        workers_per_gpu=0,
         num_gpus=1,
         dist=False,
         shuffle=False)

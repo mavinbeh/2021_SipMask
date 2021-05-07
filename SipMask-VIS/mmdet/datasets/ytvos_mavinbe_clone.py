@@ -10,6 +10,8 @@ from .transforms import (ImageTransform, BboxTransform, MaskTransform,
 from pycocotools.ytvos import YTVOS
 from mmcv.parallel import DataContainer as DC
 from .utils import to_tensor, random_scale
+from tools.VideoStreamProvider import VideoStreamProvider
+import cv2
 
 @DATASETS.register_module
 class YTVOSMavinbeCloneDataset(CustomDataset):
@@ -38,6 +40,17 @@ class YTVOSMavinbeCloneDataset(CustomDataset):
                  resize_keep_ratio=True,
                  test_mode=False):
         self.frame_id_counter = 0
+        self.cap = cv2.VideoCapture('/SipMask-VIS/data/abc2_cuted.mp4')
+
+        # while True:
+        #     grabbed, frame = self.cap.read()
+        #     if grabbed is False:
+        #         return
+        # self.videoProvider = VideoStreamProvider('/SipMask-VIS/data/abc2_cuted.mp4')
+        # grabbed, img = self.videoProvider.read()
+        # if grabbed is False:
+        #     print("Error: can't read first frame!")
+        #     exit(1)
 
         # prefix of images path
         self.img_prefix = img_prefix
@@ -296,18 +309,23 @@ class YTVOSMavinbeCloneDataset(CustomDataset):
         """Prepare an image for testing (multi-scale and flipping)"""
         frame_id = self.frame_id_counter
         vid = 0
-        vid, frame_id = idx
+        #vid, frame_id = idx
         vid_info = self.vid_infos[vid]
-        img = mmcv.imread(osp.join(self.img_prefix, vid_info['filenames'][frame_id]))
         proposal = None
         
+        #grabbed, img = self.videoProvider.read()
+        grabbed, img = self.cap.read()
+        if grabbed is False:
+            return
 
         def prepare_single(img, frame_id, scale, flip, proposal=None):
+            ori_shape = img.shape
             _img, img_shape, pad_shape, scale_factor = self.img_transform(
                 img, scale, flip, keep_ratio=self.resize_keep_ratio)
             _img = to_tensor(_img)
+            ori_shape = img.shape
             _img_meta = dict(
-                ori_shape=(vid_info['height'], vid_info['width'], 3),
+                ori_shape=ori_shape,
                 img_shape=img_shape,
                 pad_shape=pad_shape,
                 is_first=(frame_id == 0),
