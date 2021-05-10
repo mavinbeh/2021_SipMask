@@ -8,6 +8,8 @@ import pycocotools.mask as maskUtils
 import torch.nn as nn
 
 from mmdet.core import auto_fp16, get_classes, tensor2imgs
+import torch
+
 
 
 class BaseDetector(nn.Module):
@@ -73,6 +75,7 @@ class BaseDetector(nn.Module):
                 'num of augmentations ({}) != num of image meta ({})'.format(
                     len(imgs), len(img_metas)))
         # TODO: remove the restriction of imgs_per_gpu == 1 when prepared
+        new = torch.tensor([imgs[0]])
         imgs_per_gpu = imgs[0].size(0)
         assert imgs_per_gpu == 1
 
